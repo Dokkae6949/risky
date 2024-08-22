@@ -10,5 +10,6 @@ qemu-system-riscv64
   -m 150M
   -s
   -nographic
-  -bios
+  -bios opensbi/build/platform/generic/firmware/fw_dynamic.bin
+  -kernel
 """

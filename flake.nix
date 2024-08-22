@@ -2,44 +2,31 @@
   description = "Flake with RISC-V 32-bit and 64-bit toolchains";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
-  outputs = { self, nixpkgs, flake-parts }:
-    flake-parts.lib.mkFlake {  inherit self nixpkgs;
+  outputs = { flake-parts, ... }@inputs:
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
+      ];
 
-      systems = ["x86_64-linux"]; # You can add other systems if needed
+      perSystem = { pkgs, ... }: rec {
+        devShells.default = devShells.rv64;
 
-      devShells = {
-        riscv32 = {
-          inputs = [];
-          nativeInputs = [];
-
-          packages = let
-            riscv32-pkgs = import nixpkgs {
-              crossSystem = nixpkgs.lib.systems.examples.riscv32-embedded;
-            };
-          in [
-            # Add other packages if needed
+        devShells.rv32 = pkgs.mkShell {
+          packages = with pkgs; [
+            pkgsCross.riscv32.stdenv.cc
           ];
         };
 
-        riscv64 = {
-          inputs = [
-            # Uncomment if you want to include QEMU
-            # riscv64-pkgs.buildPackages.buildPackages.qemu
-          ];
-          nativeInputs = [
-            riscv64-pkgs.buildPackages.gdb
-          ];
-
-          packages = let
-            riscv64-pkgs = import nixpkgs {
-              crossSystem = nixpkgs.lib.systems.examples.riscv64;
-            };
-          in [
-            # Add other packages if needed
+        devShells.rv64 = pkgs.mkShell {
+          packages = with pkgs; [
+            pkgsCross.riscv64.stdenv.cc
           ];
         };
       };

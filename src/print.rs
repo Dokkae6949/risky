@@ -2,7 +2,7 @@
 macro_rules! print {
     ($($args:tt)+) => ({
         use core::fmt::Write;
-        let _ = write!(crate::uart::Uart::new(0x1000_0000), $($args)+);
+        let _ = write!(crate::sbi::dbcn::DebugConsoleWriter {}, $($args)+);
     });
 }
 
