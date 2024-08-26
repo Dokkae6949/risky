@@ -4,6 +4,9 @@
 .type _kentry, @function
 
 _kentry:
+    li t0, 0xc0ffee
+    beq a1, t0, enter_kernel_ap
+
   # Set up the global pointer (GP) register.
   .option push
   .option norelax

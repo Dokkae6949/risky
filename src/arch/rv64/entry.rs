@@ -5,6 +5,7 @@ use core::ops::Deref;
 use opensbi::{hart_get_status, hart_start, HartState};
 use crate::allocator;
 use crate::arch::logger::OpenSbiLogger;
+use crate::arch::macros::print::PRINT_LOCK;
 use crate::arch::rv64::asm::{get_hart_id, init_stack_pointer};
 use crate::logger::LOGGER;
 
@@ -31,9 +32,10 @@ pub unsafe extern "C" fn kentry(hart_id: usize) -> ! {
     LOGGER.set_logger(Box::new(OpenSbiLogger));
     println!("Logger initialized");
 
+    println!("funny");
     println!("+ Starting other harts...");
     for hid in 0..4 {
-        let result = hart_start(hid, kentry_ap as *const () as usize, 0);
+        let result = hart_start(hid, kentry_ap as *const fn() as usize, 0xc0ffee);
         println!("| Starting Hart {}: {:?}", hid, result);
     }
 
