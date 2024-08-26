@@ -20,6 +20,7 @@ pub unsafe extern "C" fn kentry(hart_id: usize) -> ! {
     assert_eq!(BSS_TEST_ZERO, 0);
     assert_eq!(DATA_TEST_NONZERO, 0xFFFF_FFFF_FFFF_FFFF);
 
+    println!("---< Booting RiskyOS >---");
     println!("Hart {} started", hart_id);
 
     println!("Initializing logger...");
@@ -33,7 +34,7 @@ pub unsafe extern "C" fn kentry(hart_id: usize) -> ! {
     println!("Starting other harts...");
     for hid in 0..4 {
         let result = hart_start(hid, kentry_ap as usize, 0);
-        println!("  Starting Hart {}: {:?}", hid, result)
+        println!("  Starting Hart {}: {:?}", hid, result);
     }
 
     crate::kmain();

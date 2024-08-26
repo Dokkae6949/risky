@@ -65,6 +65,7 @@ impl SbiCall {
         }
     }
 
+    #[inline(always)]
     pub unsafe fn call(&self) -> SbiRet<usize> {
         let (error, value);
         asm!(

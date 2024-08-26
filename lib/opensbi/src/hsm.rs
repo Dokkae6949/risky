@@ -40,6 +40,7 @@ impl HartState {
     }
 }
 
+#[inline(always)]
 pub fn hart_start(
     hartid: usize,
     start_address: usize,
@@ -54,6 +55,7 @@ pub fn hart_start(
     }
 }
 
+#[inline(always)]
 pub fn hart_stop() -> SbiRet<usize> {
     unsafe {
         SbiCall::new(
@@ -64,6 +66,7 @@ pub fn hart_stop() -> SbiRet<usize> {
     }
 }
 
+#[inline(always)]
 pub fn hart_get_status(
     hartid: usize,
 ) -> SbiRet<HartState> {
@@ -78,6 +81,7 @@ pub fn hart_get_status(
     SbiRet::new(result.error, HartState::new(result.value))
 }
 
+#[inline(always)]
 pub fn hart_suspend(
     suspend_type: u32,
     resume_address: usize,

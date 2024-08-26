@@ -1,15 +1,27 @@
 pub mod lock;
 pub use lock::*;
 
+#[cfg(feature = "allocator_bump")]
 pub mod bump;
+#[cfg(feature = "allocator_bump")]
 pub use bump::*;
-
+#[cfg(feature = "allocator_bump")]
+#[cfg(not(feature = "allocator_fixed_size_block"))]
 #[global_allocator]
 pub static ALLOCATOR: Locked<BumpAllocator> = Locked::new(BumpAllocator::new());
+
+#[cfg(feature = "allocator_fixed_size_block")]
+pub mod fixed_sized_block;
+#[cfg(feature = "allocator_fixed_size_block")]
+pub use fixed_sized_block::*;
+#[cfg(feature = "allocator_fixed_size_block")]
+#[global_allocator]
+pub static ALLOCATOR: Locked<FixedSizedBlockAllocator> = Locked::new(FixedSizedBlockAllocator::new());
 
 /// Initialize the kernel heap allocator.
 pub unsafe fn init() {
     #[cfg(feature = "allocator_bump")]
+    #[cfg(feature = "allocator_fixed_size_block")]
     {
         let heap_start = crate::arch::consts::KERNEL_HEAP_OFFSET;
         let heap_size = crate::arch::consts::KERNEL_HEAP_SIZE;

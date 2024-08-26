@@ -23,3 +23,8 @@ panic = "abort"
 
 [profile.release]
 panic = "abort"
+
+[features]
+default = ["allocator_fixed_size_block"]
+allocator_bump = []
+allocator_fixed_size_block = ["allocator_bump"]
