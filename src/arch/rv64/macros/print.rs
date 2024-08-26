@@ -1,8 +1,14 @@
+use spin::Mutex;
+use crate::arch::logger::OpenSbiLogger;
+
+pub static PRINT_LOCK: Mutex<OpenSbiLogger> = Mutex::new(OpenSbiLogger);
+
 #[macro_export]
 macro_rules! print {
     ($($args:tt)+) => ({
         use core::fmt::Write;
-        let _ = write!(crate::sbi::dbcn::DebugConsoleWriter {}, $($args)+);
+        let mut logger = $crate::arch::macros::print::PRINT_LOCK.lock();
+        let _ = write!(logger, $($args)*).unwrap();
     });
 }
 

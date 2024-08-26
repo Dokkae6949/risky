@@ -1,6 +1,6 @@
 use core::{arch::asm, isize};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum SbiError {
     Success,
     Failed,

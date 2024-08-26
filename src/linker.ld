@@ -1,6 +1,11 @@
+/*
+ * For some reason I can't get the linker script to load from
+ * withing the arch/ dir so I'm just going to put it here for now.
+ */
+
 OUTPUT_ARCH("riscv")
 
-ENTRY(_start)
+ENTRY(_kentry)
 
 MEMORY {
   ram (wxa) : ORIGIN = 0x80200000, LENGTH = 128M
@@ -44,7 +49,7 @@ SECTIONS {
 
   PROVIDE(_memory_start = ORIGIN(ram));
   PROVIDE(_stack_start = _bss_end);
-  PROVIDE(_stack_end = _stack_start + 0x80000);
+  PROVIDE(_stack_end = _stack_start + 4096 * 4);
   PROVIDE(_memory_end = ORIGIN(ram) + LENGTH(ram));
 
   PROVIDE(_heap_start = _stack_end);

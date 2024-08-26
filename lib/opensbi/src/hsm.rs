@@ -1,6 +1,6 @@
 use core::usize;
 
-use super::call::{SbiCall, SbiRet};
+use crate::{SbiCall, SbiRet};
 
 pub const HSM_EID: usize = 0x48534D;
 pub const HSM_EID_HART_START_FID: usize = 0;
@@ -13,6 +13,7 @@ pub mod suspend_type {
     pub const NON_RETENTIVE: u32 = 0x80000000;
 }
 
+#[derive(Debug, Clone, PartialEq)]
 pub enum HartState {
     Started,
     Stopped,
