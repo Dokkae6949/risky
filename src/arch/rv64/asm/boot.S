@@ -1,3 +1,4 @@
+.attribute arch, "rv64gc"
 .section .text.init
 .global _kentry
 .type _kentry, @function
@@ -32,3 +33,13 @@ halt:
     # in an infinite loop.
     wfi                       # Wait for interrupt
     j halt                    # Jump back to halt and stay in the loop
+
+enter_kernel_ap:
+    call kentry_ap
+
+halt_ap:
+    # If main returns, halt the system.
+    # We don't expect to reach here, but just in case, we put the system
+    # in an infinite loop.
+    wfi                       # Wait for interrupt
+    j halt_ap                 # Jump back to halt and stay in the loop
