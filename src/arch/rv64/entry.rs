@@ -35,6 +35,10 @@ pub unsafe extern "C" fn kentry(hart_id: usize) -> ! {
     println!("funny");
     println!("+ Starting other harts...");
     for hid in 0..4 {
+        // 0xc0ffee is the argument passed to the kernel entry point inside the a1 register.
+        // This is a weird workaround because the hart should already
+        // be inside kentry_ap but instead it starts executing way before that.
+        // So we also check for the a1 register to be 0xc0ffee and if it is we call kentry_ap manually.
         let result = hart_start(hid, kentry_ap as *const fn() as usize, 0xc0ffee);
         println!("| Starting Hart {}: {:?}", hid, result);
     }
