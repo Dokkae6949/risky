@@ -1,0 +1,10 @@
+[package]
+name = "opensbi"
+description = "Rust bindings for OpenSBI"
+version = "0.1.0"
+edition = "2021"
+authors = [
+    "Finn Linck Ryan <finnliry@gmail.com>"
+]
+
+[dependencies]
