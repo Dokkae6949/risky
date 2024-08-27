@@ -1,11 +1,9 @@
 use alloc::boxed::Box;
-use core::fmt::Write;
-use core::arch::{asm, global_asm};
-use core::ops::Deref;
-use opensbi::{hart_get_status, hart_start, HartState};
+use core::arch::global_asm;
+use opensbi::hart_start;
 use crate::allocator;
+use crate::arch::consts::KERNEL_ENTRY;
 use crate::arch::logger::OpenSbiLogger;
-use crate::arch::macros::print::PRINT_LOCK;
 use crate::arch::rv64::asm::{get_hart_id, init_stack_pointer};
 use crate::logger::LOGGER;
 
@@ -17,13 +15,14 @@ static BSS_TEST_ZERO: usize = 0;
 static DATA_TEST_NONZERO: usize = 0xFFFF_FFFF_FFFF_FFFF;
 
 #[no_mangle]
-pub unsafe extern "C" fn kentry(hart_id: usize) -> ! {
+pub unsafe extern "C" fn kentry(hart_id: usize, dtb: usize) -> ! {
     assert_eq!(BSS_TEST_ZERO, 0);
     assert_eq!(DATA_TEST_NONZERO, 0xFFFF_FFFF_FFFF_FFFF);
 
     println!("+ Booting RiskyOS ");
     println!("| Made by: DokkaeCat <linfia21@htl-kaindorf.at>");
     println!("| Started on Hart: {}", hart_id);
+    println!("| Device Tree Blob at: {:#x}", dtb);
 
     println!("Initializing allocator...");
     allocator::init();
@@ -39,7 +38,7 @@ pub unsafe extern "C" fn kentry(hart_id: usize) -> ! {
         // This is a weird workaround because the hart should already
         // be inside kentry_ap but instead it starts executing way before that.
         // So we also check for the a1 register to be 0xc0ffee and if it is we call kentry_ap manually.
-        let result = hart_start(hid, kentry_ap as *const fn() as usize, 0xc0ffee);
+        let result = hart_start(hid, KERNEL_ENTRY, 0xc0ffee);
         println!("| Starting Hart {}: {:?}", hid, result);
     }
 
