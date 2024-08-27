@@ -13,3 +13,16 @@ qemu-system-riscv64
   -bios opensbi/build/platform/generic/firmware/fw_dynamic.bin
   -kernel
 """
+
+[target.riscv32imac-unknown-none-elf]
+runner = """
+qemu-system-riscv32
+  -cpu rv32
+  -smp 4
+  -machine virt
+  -m 150M
+  -s
+  -nographic
+  -bios opensbi/build/platform/generic/firmware/fw_dynamic.bin
+  -kernel
+"""

@@ -22,6 +22,7 @@ pub unsafe extern "C" fn kentry(hart_id: usize) -> ! {
     assert_eq!(DATA_TEST_NONZERO, 0xFFFF_FFFF_FFFF_FFFF);
 
     println!("+ Booting RiskyOS ");
+    println!("| Made by: DokkaeCat <linfia21@htl-kaindorf.at>");
     println!("| Started on Hart: {}", hart_id);
 
     println!("Initializing allocator...");
@@ -32,7 +33,6 @@ pub unsafe extern "C" fn kentry(hart_id: usize) -> ! {
     LOGGER.set_logger(Box::new(OpenSbiLogger));
     println!("Logger initialized");
 
-    println!("funny");
     println!("+ Starting other harts...");
     for hid in 0..4 {
         // 0xc0ffee is the argument passed to the kernel entry point inside the a1 register.
