@@ -3,6 +3,7 @@
 pub mod call;
 pub mod dbcn;
 pub mod hsm;
+pub mod time;
 
 pub use call::*;
 pub use dbcn::*;

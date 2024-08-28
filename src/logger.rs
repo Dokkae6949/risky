@@ -1,6 +1,8 @@
 use alloc::boxed::Box;
 use spin::Mutex;
 
+/// The global logger instance.
+/// This will be set by the arch specific kernel entry point `kentry`.
 pub static mut LOGGER: LoggerWrapper = LoggerWrapper::new();
 
 pub trait Logger: Send {

@@ -51,7 +51,7 @@ unsafe impl GlobalAlloc for Locked<BumpAllocator> {
         }
     }
 
-    unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
+    unsafe fn dealloc(&self, _ptr: *mut u8, _layout: Layout) {
         let mut allocator = self.lock();
 
         allocator.allocations -= 1;

@@ -16,16 +16,20 @@ pub mod fixed_sized_block;
 pub use fixed_sized_block::*;
 #[cfg(feature = "allocator_fixed_size_block")]
 #[global_allocator]
-pub static ALLOCATOR: Locked<FixedSizedBlockAllocator> = Locked::new(FixedSizedBlockAllocator::new());
+pub static KERNEL_HEAP_ALLOCATOR: Locked<FixedSizedBlockAllocator> = Locked::new(FixedSizedBlockAllocator::new());
+
+/// The kernel heap.
+/// This is a fixed size heap of 128 KiB.
+pub static KERNEL_HEAP: [u8; 0x0002_0000] = [0; 0x0002_0000];
 
 /// Initialize the kernel heap allocator.
 pub unsafe fn init() {
     #[cfg(feature = "allocator_bump")]
     #[cfg(feature = "allocator_fixed_size_block")]
     {
-        let heap_start = crate::arch::consts::KERNEL_HEAP_OFFSET;
-        let heap_size = crate::arch::consts::KERNEL_HEAP_SIZE;
-        ALLOCATOR.lock().init(heap_start, heap_size);
+        let heap_start = KERNEL_HEAP.as_ptr() as usize;
+        let heap_size = KERNEL_HEAP.len();
+        KERNEL_HEAP_ALLOCATOR.lock().init(heap_start, heap_size);
     }
 }
 

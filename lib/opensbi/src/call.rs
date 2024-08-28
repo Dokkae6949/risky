@@ -49,36 +49,166 @@ impl<T> SbiRet<T> {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct SbiCall {
-    pub extension_id: usize,
-    pub function_id: usize,
-    pub args: [usize; 6],
+/// Zero-argument `ecall` with the given extension ID and function ID.
+/// # Safety
+/// This function is only safe if the given function ID accepts zero arguments.
+#[inline(always)]
+pub unsafe fn ecall0(
+    extension_id: usize,
+    function_id: usize,
+) -> SbiRet<usize> {
+    let (error, value);
+    asm!(
+        "ecall",
+        in("a7") extension_id,
+        in("a6") function_id,
+        lateout("a0") error,
+        lateout("a1") value,
+    );
+    SbiRet::new(SbiError::new(error), value)
 }
 
-impl SbiCall {
-    pub fn new(extension_id: usize, function_id: usize, args: [usize; 6]) -> Self {
-        Self {
-            extension_id,
-            function_id,
-            args,
-        }
-    }
+/// One-argument `ecall` with the given extension ID, function ID, and argument.
+/// # Safety
+/// This function is only safe if the given function ID accepts one argument.
+#[inline(always)]
+pub unsafe fn ecall1(
+    extension_id: usize,
+    function_id: usize,
+    arg0: usize,
+) -> SbiRet<usize> {
+    let (error, value);
+    asm!(
+        "ecall",
+        in("a7") extension_id,
+        in("a6") function_id,
+        inlateout("a0") arg0 => error,
+        lateout("a1") value,
+    );
+    SbiRet::new(SbiError::new(error), value)
+}
 
-    #[inline(always)]
-    pub unsafe fn call(&self) -> SbiRet<usize> {
-        let (error, value);
-        asm!(
-            "ecall",
-            in("a7") self.extension_id,
-            in("a6") self.function_id,
-            inlateout("a0") self.args[0] => error,
-            inlateout("a1") self.args[1] => value,
-            in("a2") self.args[2],
-            in("a3") self.args[3],
-            in("a4") self.args[4],
-            in("a5") self.args[5],
-        );
-        SbiRet::new(SbiError::new(error), value)
-    }
+/// Two-argument `ecall` with the given extension ID, function ID, and arguments.
+/// # Safety
+/// This function is only safe if the given function ID accepts two arguments.
+#[inline(always)]
+pub unsafe fn ecall2(
+    extension_id: usize,
+    function_id: usize,
+    arg0: usize,
+    arg1: usize,
+) -> SbiRet<usize> {
+    let (error, value);
+    asm!(
+        "ecall",
+        in("a7") extension_id,
+        in("a6") function_id,
+        inlateout("a0") arg0 => error,
+        inlateout("a1") arg1 => value,
+    );
+    SbiRet::new(SbiError::new(error), value)
+}
+
+/// Three-argument `ecall` with the given extension ID, function ID, and arguments.
+/// # Safety
+/// This function is only safe if the given function ID accepts three arguments.
+#[inline(always)]
+pub unsafe fn ecall3(
+    extension_id: usize,
+    function_id: usize,
+    arg0: usize,
+    arg1: usize,
+    arg2: usize,
+) -> SbiRet<usize> {
+    let (error, value);
+    asm!(
+    "ecall",
+        in("a7") extension_id,
+        in("a6") function_id,
+        inlateout("a0") arg0 => error,
+        inlateout("a1") arg1 => value,
+        in("a2") arg2,
+    );
+    SbiRet::new(SbiError::new(error), value)
+}
+
+/// Four-argument `ecall` with the given extension ID, function ID, and arguments.
+/// # Safety
+/// This function is only safe if the given function ID accepts four arguments.
+#[inline(always)]
+pub unsafe fn ecall4(
+    extension_id: usize,
+    function_id: usize,
+    arg0: usize,
+    arg1: usize,
+    arg2: usize,
+    arg3: usize,
+) -> SbiRet<usize> {
+    let (error, value);
+    asm!(
+        "ecall",
+        in("a7") extension_id,
+        in("a6") function_id,
+        inlateout("a0") arg0 => error,
+        inlateout("a1") arg1 => value,
+        in("a2") arg2,
+        in("a3") arg3,
+    );
+    SbiRet::new(SbiError::new(error), value)
+}
+
+/// Five-argument `ecall` with the given extension ID, function ID, and arguments.
+/// # Safety
+/// This function is only safe if the given function ID accepts five arguments.
+#[inline(always)]
+pub unsafe fn ecall5(
+    extension_id: usize,
+    function_id: usize,
+    arg0: usize,
+    arg1: usize,
+    arg2: usize,
+    arg3: usize,
+    arg4: usize,
+) -> SbiRet<usize> {
+    let (error, value);
+    asm!(
+        "ecall",
+        in("a7") extension_id,
+        in("a6") function_id,
+        inlateout("a0") arg0 => error,
+        inlateout("a1") arg1 => value,
+        in("a2") arg2,
+        in("a3") arg3,
+        in("a4") arg4,
+    );
+    SbiRet::new(SbiError::new(error), value)
+}
+
+/// Six-argument `ecall` with the given extension ID, function ID, and arguments.
+/// # Safety
+/// This function is only safe if the given function ID accepts six arguments.
+#[inline(always)]
+pub unsafe fn ecall6(
+    extension_id: usize,
+    function_id: usize,
+    arg0: usize,
+    arg1: usize,
+    arg2: usize,
+    arg3: usize,
+    arg4: usize,
+    arg5: usize,
+) -> SbiRet<usize> {
+    let (error, value);
+    asm!(
+        "ecall",
+        in("a7") extension_id,
+        in("a6") function_id,
+        inlateout("a0") arg0 => error,
+        inlateout("a1") arg1 => value,
+        in("a2") arg2,
+        in("a3") arg3,
+        in("a4") arg4,
+        in("a5") arg5,
+    );
+    SbiRet::new(SbiError::new(error), value)
 }

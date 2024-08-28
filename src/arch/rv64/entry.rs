@@ -1,10 +1,12 @@
 use alloc::boxed::Box;
 use core::arch::global_asm;
 use opensbi::hart_start;
+use opensbi::time::set_timer;
 use crate::allocator;
-use crate::arch::consts::KERNEL_ENTRY;
+use crate::arch::consts::{KERNEL_ENTRY, print_consts};
 use crate::arch::logger::OpenSbiLogger;
-use crate::arch::rv64::asm::{get_hart_id, init_stack_pointer};
+use crate::arch::rv64::asm::{get_hart_id, get_time, init_stack_pointer, is_virtual_memory_enabled};
+use crate::arch::rv64::interrupt::{enable_s_mode_interrupts, enable_timer_interrupts};
 use crate::logger::LOGGER;
 
 global_asm!(include_str!("asm/boot.S"));
@@ -23,6 +25,9 @@ pub unsafe extern "C" fn kentry(hart_id: usize, dtb: usize) -> ! {
     println!("| Made by: DokkaeCat <linfia21@htl-kaindorf.at>");
     println!("| Started on Hart: {}", hart_id);
     println!("| Device Tree Blob at: {:#x}", dtb);
+    println!("| Virtual Memory Enabled: {}", is_virtual_memory_enabled());
+
+    print_consts();
 
     println!("Initializing allocator...");
     allocator::init();
@@ -31,6 +36,12 @@ pub unsafe extern "C" fn kentry(hart_id: usize, dtb: usize) -> ! {
     println!("Initializing logger...");
     LOGGER.set_logger(Box::new(OpenSbiLogger));
     println!("Logger initialized");
+
+    enable_s_mode_interrupts();
+    enable_timer_interrupts();
+
+    let time = get_time();
+    set_timer(time + 20000000);
 
     println!("+ Starting other harts...");
     for hid in 0..4 {
@@ -55,3 +66,4 @@ pub unsafe extern "C" fn kentry_ap() -> ! {
 
     crate::kmain_ap();
 }
+

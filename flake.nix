@@ -16,17 +16,11 @@
       ];
 
       perSystem = { pkgs, ... }: rec {
-        devShells.default = devShells.rv64;
-
-        devShells.rv32 = pkgs.mkShell {
+        devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             pkgsCross.riscv32.stdenv.cc
-          ];
-        };
-
-        devShells.rv64 = pkgs.mkShell {
-          packages = with pkgs; [
             pkgsCross.riscv64.stdenv.cc
+            dtc
           ];
         };
       };

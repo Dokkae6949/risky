@@ -14,7 +14,7 @@ _kentry:
   .option pop
 
     la sp, _stack_start
-    li t0, 4096
+    li t0, 0x10000
     addi a0, a0, 1           # Increment the hart ID by 1
     mul t0, a0, t0           # Multiply the hart ID by 4096
     addi a0, a0, -1          # Decrement the hart ID by 1
