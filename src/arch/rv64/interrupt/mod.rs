@@ -1,7 +1,14 @@
 use core::arch::asm;
+use core::arch::riscv64::wfi;
 use opensbi::time::set_timer;
 use crate::arch::rv64::asm::get_time;
 
+#[inline(always)]
+pub fn halt() {
+    unsafe {
+        wfi();
+    }
+}
 
 #[inline(always)]
 pub fn enable_timer_interrupts() {

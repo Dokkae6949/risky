@@ -1,11 +1,12 @@
 #![feature(const_mut_refs)]
 #![feature(abi_riscv_interrupt)]
+#![feature(riscv_ext_intrinsics)]
 #![no_std]
 #![no_main]
 
 extern crate alloc;
 
-use core::arch::asm;
+use crate::arch::interrupt::halt;
 use crate::task::simple_executor::SimpleExecutor;
 use crate::task::Task;
 
@@ -26,11 +27,7 @@ pub extern "C" fn kmain() -> ! {
     executor.run();
 
     loop {
-        println!("Running main loop...");
-        // Fake sleep
-        for _ in 0..500000 {
-            unsafe { asm!("nop"); }
-        }
+        halt();
     }
 }
 
@@ -38,7 +35,9 @@ pub extern "C" fn kmain() -> ! {
 pub extern "C" fn kmain_ap() -> ! {
     println!("Kernel started (AP)");
 
-    loop {}
+    loop {
+        halt();
+    }
 }
 
 async fn async_number() -> u32 {

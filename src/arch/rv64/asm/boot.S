@@ -27,6 +27,7 @@ clear_bss:
     sd zero, (a1)
     addi a1, a1, 8
     j clear_bss
+
 enter_kernel:
     call kentry
 
