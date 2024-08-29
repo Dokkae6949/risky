@@ -1,4 +1,5 @@
 #![feature(const_mut_refs)]
+#![feature(abi_riscv_interrupt)]
 #![no_std]
 #![no_main]
 
@@ -27,7 +28,7 @@ pub extern "C" fn kmain() -> ! {
     loop {
         println!("Running main loop...");
         // Fake sleep
-        for _ in 0..10000000 {
+        for _ in 0..500000 {
             unsafe { asm!("nop"); }
         }
     }

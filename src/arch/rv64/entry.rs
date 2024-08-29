@@ -41,7 +41,7 @@ pub unsafe extern "C" fn kentry(hart_id: usize, dtb: usize) -> ! {
     enable_timer_interrupts();
 
     let time = get_time();
-    set_timer(time + 20000000);
+    set_timer(time + 10000000);
 
     println!("+ Starting other harts...");
     for hid in 0..4 {

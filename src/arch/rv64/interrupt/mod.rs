@@ -2,9 +2,6 @@ use core::arch::asm;
 use opensbi::time::set_timer;
 use crate::arch::rv64::asm::get_time;
 
-pub struct Registers {
-
-}
 
 #[inline(always)]
 pub fn enable_timer_interrupts() {
@@ -73,8 +70,24 @@ pub fn extract_scause(scause: usize) -> (bool, usize) {
     (interrupt, code)
 }
 
+#[inline(always)]
+fn read_sepc() -> usize {
+    let sepc: usize;
+    unsafe {
+        asm!("csrr {}, sepc", out(reg) sepc);
+    }
+    sepc
+}
+
+#[inline(always)]
+fn write_sepc(sepc: usize) {
+    unsafe {
+        asm!("csrw sepc, {}", in(reg) sepc);
+    }
+}
+
 #[no_mangle]
-pub extern "C" fn s_mode_interrupt_handler() {
+pub extern "riscv-interrupt-s" fn s_mode_interrupt_handler() {
     let (is_interrupt, cause) = extract_scause(get_interrupt_cause());
 
     if is_interrupt {
@@ -85,10 +98,17 @@ pub extern "C" fn s_mode_interrupt_handler() {
 
     println!("| Cause: {:#x}", cause);
 
-    match cause {
-        0x5 => {
-            println!("| Timer Interrupt");
-            disable_timer_interrupts();
+    match (is_interrupt, cause) {
+        (true, 0x5) => {
+            println!("| Supervisor timer interrupt");
+            clear_timer_interrupt();
+            set_timer(get_time() + 10000000);
+        }
+        (false, 0x7) => {
+            println!("| Store/AMO access fault");
+            // Skip the instruction that caused the fault
+            let sepc = read_sepc();
+            write_sepc(sepc + 4); // Assuming the instruction is 4 bytes (typical for RISC-V)
         }
         _ => {
             println!("| Unhandled interrupt/exception");
