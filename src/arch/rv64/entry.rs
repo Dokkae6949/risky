@@ -3,10 +3,11 @@ use core::arch::global_asm;
 use opensbi::hart_start;
 use opensbi::time::set_timer;
 use crate::allocator;
-use crate::arch::consts::{KERNEL_ENTRY, print_consts};
+use crate::arch::consts::{print_consts, _kentry};
 use crate::arch::logger::OpenSbiLogger;
 use crate::arch::rv64::asm::{get_hart_id, get_time, init_stack_pointer, is_virtual_memory_enabled};
 use crate::arch::rv64::interrupt::{enable_s_mode_interrupts, enable_timer_interrupts};
+use crate::arch::rv64::memory;
 use crate::logger::LOGGER;
 
 global_asm!(include_str!("asm/boot.S"));
@@ -29,9 +30,17 @@ pub unsafe extern "C" fn kentry(hart_id: usize, dtb: usize) -> ! {
 
     print_consts();
 
-    println!("Initializing allocator...");
+    println!("Initializing page allocator...");
+    memory::init();
+    memory::alloc(2);
+    memory::alloc(2);
+    memory::alloc(16);
+    memory::print_page_allocations();
+    println!("Page allocator initialized");
+
+    println!("Initializing kernel allocator...");
     allocator::init();
-    println!("Allocator initialized");
+    println!("Kernel allocator initialized");
 
     println!("Initializing logger...");
     LOGGER.set_logger(Box::new(OpenSbiLogger));
@@ -49,7 +58,7 @@ pub unsafe extern "C" fn kentry(hart_id: usize, dtb: usize) -> ! {
         // This is a weird workaround because the hart should already
         // be inside kentry_ap but instead it starts executing way before that.
         // So we also check for the a1 register to be 0xc0ffee and if it is we call kentry_ap manually.
-        let result = hart_start(hid, KERNEL_ENTRY, 0xc0ffee);
+        let result = hart_start(hid, _kentry as usize, 0xc0ffee);
         println!("| Starting Hart {}: {:?}", hid, result);
     }
 

@@ -4,9 +4,6 @@
 .type _kentry, @function
 
 _kentry:
-    li t0, 0xc0ffee
-    beq a1, t0, enter_kernel_ap
-
   # Set up the global pointer (GP) register.
   .option push
   .option norelax
@@ -19,6 +16,9 @@ _kentry:
     mul t0, a0, t0           # Multiply the hart ID by 4096
     addi a0, a0, -1          # Decrement the hart ID by 1
     add sp, sp, t0           # Add the result to the stack pointer
+
+    li t0, 0xc0ffee
+    beq a1, t0, enter_kernel_ap
 
     la a1, _bss_start
     la a2, _bss_end

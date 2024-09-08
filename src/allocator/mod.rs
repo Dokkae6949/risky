@@ -20,7 +20,7 @@ pub static KERNEL_HEAP_ALLOCATOR: Locked<FixedSizedBlockAllocator> = Locked::new
 
 /// The kernel heap.
 /// This is a fixed size heap of 128 KiB.
-pub static KERNEL_HEAP: [u8; 0x0002_0000] = [0; 0x0002_0000];
+pub static KERNEL_HEAP: [u8; 0x0001_0000] = [0; 0x0001_0000];
 
 /// Initialize the kernel heap allocator.
 pub unsafe fn init() {
@@ -47,6 +47,6 @@ pub unsafe fn init() {
 /// }
 /// ```
 pub fn align_up(addr: usize, align: usize) -> usize {
+    assert!(align.is_power_of_two());
     (addr + align - 1) & !(align - 1)
 }
-
