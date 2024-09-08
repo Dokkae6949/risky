@@ -2,11 +2,13 @@
 #![feature(abi_riscv_interrupt)]
 #![feature(riscv_ext_intrinsics)]
 #![feature(core_intrinsics)]
+#![feature(alloc_error_handler)]
 #![no_std]
 #![no_main]
 
 extern crate alloc;
 
+use crate::arch::interrupt::halt;
 use crate::task::simple_executor::SimpleExecutor;
 use crate::task::Task;
 
@@ -20,20 +22,24 @@ mod task;
 #[no_mangle]
 pub extern "C" fn kmain() -> ! {
     println!("Kernel started");
-
+    /*
     println!("Running async test...");
     let mut executor = SimpleExecutor::new();
     executor.spawn(Task::new(test_async()));
     executor.run();
-
-    loop {}
+    */
+    loop {
+        halt();
+    }
 }
 
 #[no_mangle]
 pub extern "C" fn kmain_ap() -> ! {
     println!("Kernel started (AP)");
 
-    loop {}
+    loop {
+        halt();
+    }
 }
 
 async fn async_number() -> u32 {

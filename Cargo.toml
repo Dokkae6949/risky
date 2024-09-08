@@ -25,6 +25,6 @@ panic = "abort"
 panic = "abort"
 
 [features]
-default = ["allocator_fixed_size_block"]
+default = []
 allocator_bump = []
 allocator_fixed_size_block = ["allocator_bump"]

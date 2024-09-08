@@ -20,7 +20,7 @@ impl BumpAllocator {
         }
     }
 
-    /// Initializes the bump allocator with the given heap bounds.
+    /// Initializes the bump memory with the given heap bounds.
     /// # Safety
     /// This function is unsafe because the caller must guarantee that
     /// the given heap bounds are valid and that the memory in this range is unused.

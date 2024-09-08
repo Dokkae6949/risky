@@ -10,6 +10,7 @@ use crate::arch::rv64::interrupt::{enable_s_mode_interrupts, enable_timer_interr
 use crate::arch::rv64::memory;
 use crate::logger::LOGGER;
 
+global_asm!(include_str!("asm/memory.S"));
 global_asm!(include_str!("asm/boot.S"));
 
 /// Test of zero values in BSS.
@@ -31,20 +32,17 @@ pub unsafe extern "C" fn kentry(hart_id: usize, dtb: usize) -> ! {
     print_consts();
 
     println!("Initializing page allocator...");
-    memory::init();
-    memory::alloc(2);
-    memory::alloc(2);
-    memory::alloc(16);
-    memory::print_page_allocations();
+    memory::page_allocator::init();
     println!("Page allocator initialized");
 
-    println!("Initializing kernel allocator...");
-    allocator::init();
-    println!("Kernel allocator initialized");
+    println!("Initializing kernel memory...");
+    memory::kernel_allocator::init();
+    println!("Kernel memory initialized");
 
-    println!("Initializing logger...");
-    LOGGER.set_logger(Box::new(OpenSbiLogger));
-    println!("Logger initialized");
+    // Requires HEAP to be initialized.
+    //println!("Initializing logger...");
+    //LOGGER.set_logger(Box::new(OpenSbiLogger));
+    //println!("Logger initialized");
 
     enable_s_mode_interrupts();
     enable_timer_interrupts();
@@ -67,8 +65,6 @@ pub unsafe extern "C" fn kentry(hart_id: usize, dtb: usize) -> ! {
 
 #[no_mangle]
 pub unsafe extern "C" fn kentry_ap() -> ! {
-    init_stack_pointer();
-
     let hart_id = get_hart_id();
 
     println!("Hart {} started (AP)", hart_id);

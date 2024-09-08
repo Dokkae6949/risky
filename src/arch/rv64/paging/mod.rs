@@ -3,8 +3,8 @@ mod entry;
 
 pub use table::*;
 pub use entry::*;
-use crate::arch::logger::OpenSbiLogger;
-use crate::arch::rv64::memory::{dealloc, zalloc};
+
+use crate::arch::rv64::memory::page_allocator::{dealloc, zalloc};
 
 /// Map a virtual address to a physical address.
 /// # Safety

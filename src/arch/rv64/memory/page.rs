@@ -1,4 +1,5 @@
 #[repr(u8)]
+#[derive(Debug, Clone, Copy)]
 pub enum PageBits {
     Empty = 0,
     Taken = 1 << 0,
@@ -14,6 +15,7 @@ impl PageBits {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
 pub struct Page {
     flags: u8,
 }
