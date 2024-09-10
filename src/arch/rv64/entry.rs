@@ -26,14 +26,14 @@ pub unsafe extern "C" fn kentry(hart_id: usize, dtb: usize) -> ! {
     assert_eq!(BSS_TEST_ZERO, 0);
     assert_eq!(DATA_TEST_NONZERO, 0xFFFF_FFFF_FFFF_FFFF);
 
+    enable_s_mode_interrupts();
+
     println!("+ Booting RiskyOS ");
     println!("| Made by: DokkaeCat <linfia21@htl-kaindorf.at>");
     println!("| Started on Hart: {}", hart_id);
     println!("| Device Tree Blob at: {:#x}", dtb);
     println!("| Virtual Memory Enabled: {}", is_virtual_memory_enabled());
     println!("| satp: {:#x}", read_satp());
-
-    enable_s_mode_interrupts();
 
     print_consts();
 
