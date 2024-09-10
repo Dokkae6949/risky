@@ -1,13 +1,16 @@
 use alloc::boxed::Box;
-use core::arch::global_asm;
+use alloc::vec::Vec;
+use core::arch::{asm, global_asm};
 use opensbi::hart_start;
 use opensbi::time::set_timer;
 use crate::allocator;
 use crate::arch::consts::{print_consts, _kentry};
 use crate::arch::logger::OpenSbiLogger;
-use crate::arch::rv64::asm::{get_hart_id, get_time, init_stack_pointer, is_virtual_memory_enabled};
+use crate::arch::rv64::asm::{get_hart_id, get_time, init_stack_pointer, is_virtual_memory_enabled, read_satp};
 use crate::arch::rv64::interrupt::{enable_s_mode_interrupts, enable_timer_interrupts};
 use crate::arch::rv64::memory;
+use crate::arch::rv64::memory::kernel_allocator::{kzmalloc, print_kmem_table};
+use crate::arch::rv64::memory::page_allocator::print_page_allocations;
 use crate::logger::LOGGER;
 
 global_asm!(include_str!("asm/memory.S"));
@@ -28,6 +31,9 @@ pub unsafe extern "C" fn kentry(hart_id: usize, dtb: usize) -> ! {
     println!("| Started on Hart: {}", hart_id);
     println!("| Device Tree Blob at: {:#x}", dtb);
     println!("| Virtual Memory Enabled: {}", is_virtual_memory_enabled());
+    println!("| satp: {:#x}", read_satp());
+
+    enable_s_mode_interrupts();
 
     print_consts();
 
@@ -40,15 +46,9 @@ pub unsafe extern "C" fn kentry(hart_id: usize, dtb: usize) -> ! {
     println!("Kernel memory initialized");
 
     // Requires HEAP to be initialized.
-    //println!("Initializing logger...");
-    //LOGGER.set_logger(Box::new(OpenSbiLogger));
-    //println!("Logger initialized");
-
-    enable_s_mode_interrupts();
-    enable_timer_interrupts();
-
-    let time = get_time();
-    set_timer(time + 10000000);
+    println!("Initializing logger...");
+    LOGGER.set_logger(Box::new(OpenSbiLogger));
+    println!("Logger initialized");
 
     println!("+ Starting other harts...");
     for hid in 0..4 {

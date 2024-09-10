@@ -106,6 +106,14 @@ pub extern "riscv-interrupt-s" fn s_mode_interrupt_handler() {
     println!("| Cause: {:#x}", cause);
 
     match (is_interrupt, cause) {
+        (false, 0x2) => {
+            println!("| Illegal instruction");
+            panic!("Illegal instruction");
+        }
+        (false, 0x5) => {
+            println!("| Load access fault");
+            panic!("Load access fault");
+        }
         (true, 0x5) => {
             println!("| Supervisor timer interrupt");
             clear_timer_interrupt();
@@ -113,12 +121,11 @@ pub extern "riscv-interrupt-s" fn s_mode_interrupt_handler() {
         }
         (false, 0x7) => {
             println!("| Store/AMO access fault");
-            // Skip the instruction that caused the fault
-            let sepc = read_sepc();
-            write_sepc(sepc + 4); // Assuming the instruction is 4 bytes (typical for RISC-V)
+            panic!("Store/AMO access fault");
         }
         _ => {
             println!("| Unhandled interrupt/exception");
+            panic!("Unhandled interrupt/exception");
         }
     };
 }

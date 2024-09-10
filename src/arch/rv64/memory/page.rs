@@ -17,7 +17,7 @@ impl PageBits {
 
 #[derive(Debug, Clone, Copy)]
 pub struct Page {
-    flags: u8,
+    pub flags: u8,
 }
 
 impl Page {
@@ -42,12 +42,12 @@ impl Page {
     }
 
     /// Sets the specified flags of the page.
-    pub fn set_flags(&mut self, flags: PageBits) {
-        self.flags |= flags.bits();
+    pub fn set_flag(&mut self, flag: PageBits) {
+        self.flags |= flag.bits();
     }
 
     /// Clears the specified flags of the page.
-    pub fn clear_flags(&mut self, flags: PageBits) {
-        self.flags &= !flags.bits();
+    pub fn clear_flag(&mut self, flag: PageBits) {
+        self.flags &= !flag.bits();
     }
 }

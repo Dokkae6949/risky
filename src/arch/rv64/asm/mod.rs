@@ -1,5 +1,4 @@
 use core::arch::asm;
-use crate::arch::paging::Table;
 
 /// Initialize the stack pointer
 /// # Safety

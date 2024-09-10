@@ -23,6 +23,12 @@ BSS_START: .dword _bss_start
 .global BSS_END
 BSS_END: .dword _bss_end
 
+.global MEMORY_START
+MEMORY_START: .dword _memory_start
+
+.global MEMORY_END
+MEMORY_END: .dword _memory_end
+
 .global STACK_START
 STACK_START: .dword _stack_start
 
@@ -34,15 +40,3 @@ HEAP_START: .dword _heap_start
 
 .global HEAP_SIZE
 HEAP_SIZE: .dword _heap_size
-
-.global PAGE_ALIGN
-PAGE_ALIGN: .dword _page_align
-
-.global PAGE_SIZE
-PAGE_SIZE: .dword _page_size
-
-.global PAGES_START
-PAGES_START: .dword _pages_start
-
-.global PAGES_SIZE
-PAGES_SIZE: .dword _pages_size

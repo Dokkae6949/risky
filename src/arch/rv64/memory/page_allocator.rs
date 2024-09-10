@@ -1,8 +1,8 @@
-use core::ptr::write_bytes;
+use core::intrinsics::size_of;
 use core::sync::atomic::{AtomicBool, Ordering};
 pub use crate::arch::rv64::memory::page::*;
 use crate::allocator::align_up;
-use crate::arch::consts::{get_heap_size, get_heap_start, get_page_align, get_pages_size, get_pages_start};
+use crate::arch::consts::{get_heap_size, get_heap_start, get_page_align};
 use crate::arch::rv64::memory::page::{Page, PageBits};
 
 /// [`get_page_align`] aligned pointer to the start of the heap.
@@ -10,9 +10,10 @@ static mut ALLOC_START: usize = 0;
 static mut IS_INITIALIZED: AtomicBool = AtomicBool::new(false);
 
 /// Check if the page allocator is initialized.
+#[inline(always)]
 pub fn is_initialized() -> bool {
     unsafe {
-        IS_INITIALIZED.load(Ordering::SeqCst)
+        IS_INITIALIZED.load(Ordering::Acquire)
     }
 }
 
@@ -26,17 +27,22 @@ pub fn init() {
         let max_pages = get_heap_size() / get_page_align();
         let ptr = get_heap_start() as *mut Page;
 
-        println!("Clearing {} pages", max_pages);
         for i in 0..max_pages {
-            println!("Clearing page {} | {:?}", i, (*ptr.add(i)));
             (*ptr.add(i)).clear();
+
+            if (*ptr.add(i)).flags != 0 {
+                (*ptr.add(i)).clear();
+
+                if (*ptr.add(i)).flags != 0 {
+                    panic!("Failed to clear page info at index {}", i);
+                }
+            }
         }
-        println!("All pages cleared");
 
         // This is needed because the first page is used for the page descriptor.
         // After that come the actual pages.
-        ALLOC_START = align_up(get_heap_start(), get_page_align());
-        IS_INITIALIZED.store(true, Ordering::SeqCst);
+        ALLOC_START = align_up(get_heap_start() + max_pages * size_of::<Page>(), get_page_align());
+        IS_INITIALIZED.store(true, Ordering::Release);
     }
 }
 
@@ -55,9 +61,7 @@ pub fn alloc(pages: usize) -> Option<*mut u8> {
         let max_pages = get_heap_size() / get_page_align();
         let ptr = get_heap_start() as *mut Page;
 
-        println!("Allocating {}/{} pages", pages, max_pages);
-
-        for i in 0..max_pages - pages {
+        for i in 0..=max_pages - pages {
             let mut found = false;
 
             // Check if the current page is free.
@@ -77,11 +81,11 @@ pub fn alloc(pages: usize) -> Option<*mut u8> {
 
             if found {
                 for j in i..i + pages - 1 {
-                    (*ptr.add(j)).set_flags(PageBits::Taken);
+                    (*ptr.add(j)).set_flag(PageBits::Taken);
                 }
 
                 // Mark the last page as taken and last.
-                (*ptr.add(i + pages - 1)).set_flags(PageBits::TakenLast);
+                (*ptr.add(i + pages - 1)).set_flag(PageBits::TakenLast);
 
                 // The page structures aren't useful on their own.
                 // Instead, we convert the index to a pointer to the first byte of the page.
@@ -100,12 +104,12 @@ pub fn alloc(pages: usize) -> Option<*mut u8> {
 /// If either of these conditions is not met, the function will panic.
 pub fn zalloc(pages: usize) -> Option<*mut u8> {
     let ptr = alloc(pages)?;
-    let size = (get_page_align() * pages) / 64;
-    let big_ptr = ptr as *mut u64;
+    let size = (get_page_align() * pages);
+    let big_ptr = ptr as *mut Page;
 
     for i in 0..size {
         unsafe {
-            (*big_ptr.add(i)) = 0;
+            (*big_ptr.add(i)).clear();
         }
     }
 

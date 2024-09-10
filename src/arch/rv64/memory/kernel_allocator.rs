@@ -30,7 +30,7 @@ pub fn get_page_table() -> Option<*mut Table> {
 
 /// Check if the kernel memory system is initialized.
 pub fn is_initialized() -> bool {
-    unsafe { IS_INITIALIZED.load(Ordering::SeqCst) }
+    unsafe { IS_INITIALIZED.load(Ordering::Acquire) }
 }
 
 /// Initializes the kernel memory system.
@@ -44,7 +44,6 @@ pub fn init() {
 
     unsafe {
         KMEM_ALLOCATED = 512;
-
         let alloc_list = zalloc(KMEM_ALLOCATED).expect("out of memory") as *mut AllocList;
         KMEM_HEAD = Some(alloc_list);
         (*KMEM_HEAD.unwrap()).set_free();
@@ -52,6 +51,7 @@ pub fn init() {
 
         let page_table = zalloc(1).expect("out of memory") as *mut Table;
         KMEM_PAGE_TABLE = Some(page_table);
+        IS_INITIALIZED.store(true, Ordering::Release);
     }
 }
 

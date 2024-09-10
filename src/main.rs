@@ -3,6 +3,7 @@
 #![feature(riscv_ext_intrinsics)]
 #![feature(core_intrinsics)]
 #![feature(alloc_error_handler)]
+#![feature(panic_info_message)]
 #![no_std]
 #![no_main]
 
@@ -28,6 +29,7 @@ pub extern "C" fn kmain() -> ! {
     executor.spawn(Task::new(test_async()));
     executor.run();
     */
+
     loop {
         halt();
     }

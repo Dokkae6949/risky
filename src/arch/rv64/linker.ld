@@ -1,8 +1,3 @@
-/*
- * For some reason I can't get the linker script to load from
- * withing the arch/ dir so I'm just going to put it here for now.
- */
-
 OUTPUT_ARCH("riscv")
 
 ENTRY(_kentry)
@@ -49,14 +44,15 @@ SECTIONS {
 
   PROVIDE(_memory_start = ORIGIN(ram));
   PROVIDE(_stack_start = _bss_end);
-  PROVIDE(_stack_end = _stack_start + 0x8000);
+  /*
+    Calculated as:
+      stack_start + (stack_size_per_hart * max_supported_harts)
+    the stack size per hart must be kept in sync with the stack size in the
+    boot code.
+  */
+  PROVIDE(_stack_end = _stack_start + (0x10000 * 4));
   PROVIDE(_memory_end = ORIGIN(ram) + LENGTH(ram));
 
   PROVIDE(_heap_start = _stack_end);
   PROVIDE(_heap_size = _memory_end - _heap_start);
-
-  PROVIDE(_page_align = 4096);
-  PROVIDE(_page_size = 512);
-  PROVIDE(_pages_start = _heap_start + _heap_size);
-  PROVIDE(_pages_size = _page_size * 8 * 3);
 }

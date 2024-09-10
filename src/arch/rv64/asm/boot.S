@@ -1,8 +1,9 @@
 .attribute arch, "rv64gc"
-.section .text.init
-.global _kentry
-.type _kentry, @function
+.option norvc
 
+.section .text.init
+
+.global _kentry
 _kentry:
   # Set up the global pointer (GP) register.
   .option push
@@ -16,6 +17,12 @@ _kentry:
     mul t0, a0, t0           # Multiply the hart ID by 4096
     addi a0, a0, -1          # Decrement the hart ID by 1
     add sp, sp, t0           # Add the result to the stack pointer
+    # Halt if the sp is greater than the stack end.
+    # This should not happen unless:
+    # - The stack size (t0) is not the same as the one in the linker script.
+    # - The hart id is greater than the number supported amount defined in the linker script.
+    la t0, _stack_end
+    bgeu sp, t0, halt
 
     li t0, 0xc0ffee
     beq a1, t0, enter_kernel_ap
