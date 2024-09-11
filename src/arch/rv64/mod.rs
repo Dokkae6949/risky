@@ -4,6 +4,6 @@ pub mod entry;
 pub mod logger;
 pub mod consts;
 pub mod interrupt;
-pub mod paging;
-mod asm;
+pub mod paging_sv39;
 mod memory;
+mod asm;

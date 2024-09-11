@@ -4,8 +4,8 @@ use crate::arch::rv64::memory::kernel_allocator::{kfree, kzmalloc};
 
 pub mod page_allocator;
 pub mod kernel_allocator;
-mod page;
-mod alloc_list;
+pub mod page;
+pub mod alloc_list;
 
 struct KernelGlobalAlloc;
 

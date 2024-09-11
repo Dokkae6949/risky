@@ -1,4 +1,6 @@
 use core::arch::asm;
+use crate::arch::consts::get_page_align;
+use crate::arch::paging_sv39::Table;
 
 /// Initialize the stack pointer
 /// # Safety
@@ -40,11 +42,24 @@ pub fn read_satp() -> usize {
     satp
 }
 
+/// Write a value to the `satp` register.
+#[inline(always)]
+pub fn write_satp(satp: usize) {
+    unsafe {
+        asm!("csrw satp, {}", in(reg) satp);
+    }
+}
+
 /// Check if virtual memory is enabled.
 #[inline(always)]
 pub fn is_virtual_memory_enabled() -> bool {
     let satp = read_satp();
     satp != 0 // If satp is non-zero, VM is enabled
+}
+
+#[inline(always)]
+pub fn enable_virtual_memory_sv39(table: *mut Table) {
+    write_satp((table as usize >> 12) | (8 << 60));
 }
 
 #[inline(always)]

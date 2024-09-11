@@ -1,4 +1,4 @@
-use crate::arch::rv64::paging::entry::Entry;
+use crate::arch::paging_sv39::Entry;
 
 pub struct Table {
     pub entries: [Entry; 512],

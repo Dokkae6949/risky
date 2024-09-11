@@ -1,6 +1,14 @@
 #![allow(dead_code)]
 
 extern "C" {
+    static TEXT_START: usize;
+    static TEXT_END: usize;
+    static RODATA_START: usize;
+    static RODATA_END: usize;
+    static DATA_START: usize;
+    static DATA_END: usize;
+    static BSS_START: usize;
+    static BSS_END: usize;
     static MEMORY_START: usize;
     static MEMORY_END: usize;
     static STACK_START: usize;
@@ -11,6 +19,46 @@ extern "C" {
     pub fn _kentry();
 }
 
+/// Returns the address of the kernel text start.
+#[inline(always)]
+pub fn get_text_start() -> usize {
+    unsafe { TEXT_START }
+}
+/// Returns the address of the kernel text end.
+#[inline(always)]
+pub fn get_text_end() -> usize {
+    unsafe { TEXT_END }
+}
+/// Returns the address of the kernel read-only data start.
+#[inline(always)]
+pub fn get_rodata_start() -> usize {
+    unsafe { RODATA_START }
+}
+/// Returns the address of the kernel read-only data end.
+#[inline(always)]
+pub fn get_rodata_end() -> usize {
+    unsafe { RODATA_END }
+}
+/// Returns the address of the kernel data start.
+#[inline(always)]
+pub fn get_data_start() -> usize {
+    unsafe { DATA_START }
+}
+/// Returns the address of the kernel data end.
+#[inline(always)]
+pub fn get_data_end() -> usize {
+    unsafe { DATA_END }
+}
+/// Returns the address of the kernel BSS start.
+#[inline(always)]
+pub fn get_bss_start() -> usize {
+    unsafe { BSS_START }
+}
+/// Returns the address of the kernel BSS end.
+#[inline(always)]
+pub fn get_bss_end() -> usize {
+    unsafe { BSS_END }
+}
 /// Returns the address of the kernel memory start.
 #[inline(always)]
 pub fn get_memory_start() -> usize {

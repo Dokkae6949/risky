@@ -3,7 +3,7 @@ use core::sync::atomic::{AtomicBool, Ordering};
 use crate::arch::rv64::memory::page_allocator::*;
 use crate::allocator::align_up;
 use crate::arch::consts::get_page_size;
-use crate::arch::paging::Table;
+use crate::arch::paging_sv39::Table;
 use crate::arch::rv64::memory::alloc_list::AllocList;
 use crate::arch::rv64::memory::page_allocator;
 use crate::arch::rv64::memory::page_allocator::zalloc;
@@ -26,6 +26,13 @@ pub fn get_allocated_pages() -> usize {
 /// Wrapper around the kmem page table to allow for safe access.
 pub fn get_page_table() -> Option<*mut Table> {
     unsafe { KMEM_PAGE_TABLE }
+}
+
+/// Set the kernel memory page table.
+pub fn set_page_table(table: *mut Table) {
+    unsafe {
+        KMEM_PAGE_TABLE = Some(table);
+    }
 }
 
 /// Check if the kernel memory system is initialized.

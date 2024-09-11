@@ -50,7 +50,7 @@ SECTIONS {
     the stack size per hart must be kept in sync with the stack size in the
     boot code.
   */
-  PROVIDE(_stack_end = _stack_start + (0x10000 * 4));
+  PROVIDE(_stack_end = _stack_start + (0x10000 * 5));
   PROVIDE(_memory_end = ORIGIN(ram) + LENGTH(ram));
 
   PROVIDE(_heap_start = _stack_end);
