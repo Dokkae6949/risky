@@ -1,5 +1,4 @@
 use core::arch::asm;
-use crate::arch::paging_sv39::Table;
 
 /// Initialize the stack pointer
 /// # Safety
@@ -31,6 +30,15 @@ pub unsafe fn get_hart_id() -> usize {
     hart_id
 }
 
+#[inline(always)]
+pub fn get_mhartid() -> usize {
+    let mhartid: usize;
+    unsafe {
+        asm!("csrr {}, mhartid", out(reg) mhartid);
+    }
+    mhartid
+}
+
 /// Read the value of the `satp` register.
 #[inline(always)]
 pub fn read_satp() -> usize {
@@ -54,11 +62,6 @@ pub fn write_satp(satp: usize) {
 pub fn is_virtual_memory_enabled() -> bool {
     let satp = read_satp();
     satp != 0 // If satp is non-zero, VM is enabled
-}
-
-#[inline(always)]
-pub fn enable_virtual_memory_sv39(table: *mut Table) {
-    write_satp((table as usize >> 12) | (8 << 60));
 }
 
 #[inline(always)]
