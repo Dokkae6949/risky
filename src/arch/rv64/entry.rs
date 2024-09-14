@@ -1,20 +1,12 @@
 use alloc::boxed::Box;
-use alloc::string::String;
-use alloc::vec;
-use alloc::vec::Vec;
-use core::arch::{asm, global_asm};
+use core::arch::global_asm;
 use opensbi::hart_start;
-use opensbi::time::set_timer;
-use crate::allocator;
 use crate::arch::consts::{print_consts, _kentry, get_heap_size, get_page_align, get_heap_start, get_text_start, get_text_end, get_rodata_start, get_rodata_end, get_data_start, get_data_end, get_bss_start, get_bss_end, get_stack_start, get_stack_end};
 use crate::arch::logger::OpenSbiLogger;
 use crate::arch::paging_sv39::{id_map_range, EntryBits};
-use crate::arch::rv64::asm::{enable_virtual_memory_sv39, get_hart_id, get_time, init_stack_pointer, is_virtual_memory_enabled, read_satp};
-use crate::arch::rv64::trap::{enable_s_mode_interrupts, enable_timer_interrupts};
-use crate::arch::rv64::memory;
-use crate::arch::rv64::memory::{kernel_allocator, page, page_allocator};
-use crate::arch::rv64::memory::kernel_allocator::{kzmalloc, print_kmem_table};
-use crate::arch::rv64::memory::page_allocator::print_page_allocations;
+use crate::arch::rv64::asm::{enable_virtual_memory_sv39, get_hart_id, is_virtual_memory_enabled, read_satp};
+use crate::arch::rv64::trap::enable_s_mode_interrupts;
+use crate::arch::rv64::memory::{kernel_allocator, page_allocator};
 use crate::logger::LOGGER;
 
 global_asm!(include_str!("asm/memory.S"));

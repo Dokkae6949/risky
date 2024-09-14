@@ -1,6 +1,5 @@
 use core::intrinsics::size_of;
 use core::sync::atomic::{AtomicBool, Ordering};
-pub use crate::arch::rv64::memory::page::*;
 use crate::allocator::align_up;
 use crate::arch::consts::{get_heap_size, get_heap_start, get_page_align};
 use crate::arch::rv64::memory::page::{Page, PageBits};
@@ -104,7 +103,7 @@ pub fn alloc(pages: usize) -> Option<*mut u8> {
 /// If either of these conditions is not met, the function will panic.
 pub fn zalloc(pages: usize) -> Option<*mut u8> {
     let ptr = alloc(pages)?;
-    let size = (get_page_align() * pages);
+    let size = get_page_align() * pages;
     let big_ptr = ptr as *mut Page;
 
     for i in 0..size {

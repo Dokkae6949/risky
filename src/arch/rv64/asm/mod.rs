@@ -1,5 +1,4 @@
 use core::arch::asm;
-use crate::arch::consts::get_page_align;
 use crate::arch::paging_sv39::Table;
 
 /// Initialize the stack pointer

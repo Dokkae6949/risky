@@ -29,7 +29,7 @@ pub extern fn s_mode_asynchronous_handler(
     cause: usize,
     hart: usize,
 ) -> usize {
-    let mut epc_return = epc;
+    let epc_return = epc;
 
     match cause {
         1 => {

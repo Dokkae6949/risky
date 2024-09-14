@@ -1,6 +1,5 @@
 use core::intrinsics::size_of;
 use core::sync::atomic::{AtomicBool, Ordering};
-use crate::arch::rv64::memory::page_allocator::*;
 use crate::allocator::align_up;
 use crate::arch::consts::get_page_size;
 use crate::arch::paging_sv39::Table;
