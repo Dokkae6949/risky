@@ -9,7 +9,7 @@
 
 extern crate alloc;
 
-use crate::arch::interrupt::halt;
+use crate::arch::trap::halt;
 use crate::task::simple_executor::SimpleExecutor;
 use crate::task::Task;
 

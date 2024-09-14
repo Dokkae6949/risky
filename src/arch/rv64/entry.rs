@@ -10,7 +10,7 @@ use crate::arch::consts::{print_consts, _kentry, get_heap_size, get_page_align, 
 use crate::arch::logger::OpenSbiLogger;
 use crate::arch::paging_sv39::{id_map_range, EntryBits};
 use crate::arch::rv64::asm::{enable_virtual_memory_sv39, get_hart_id, get_time, init_stack_pointer, is_virtual_memory_enabled, read_satp};
-use crate::arch::rv64::interrupt::{enable_s_mode_interrupts, enable_timer_interrupts};
+use crate::arch::rv64::trap::{enable_s_mode_interrupts, enable_timer_interrupts};
 use crate::arch::rv64::memory;
 use crate::arch::rv64::memory::{kernel_allocator, page, page_allocator};
 use crate::arch::rv64::memory::kernel_allocator::{kzmalloc, print_kmem_table};

@@ -1,7 +1,9 @@
+mod handler;
+mod frame;
+
 use core::arch::asm;
 use core::arch::riscv64::wfi;
-use opensbi::time::set_timer;
-use crate::arch::rv64::asm::get_time;
+use crate::arch::trap::handler::s_mode_trap_handler;
 
 #[inline(always)]
 pub fn halt() {
@@ -50,13 +52,13 @@ pub fn enable_s_mode_interrupts() {
             "csrw stvec, {}",
             "csrsi sstatus, 2",
             options(nomem, nostack),
-            in(reg) s_mode_interrupt_handler as usize,
+            in(reg) s_mode_trap_handler as usize,
         );
     }
 }
 
 #[inline(always)]
-fn get_interrupt_cause() -> usize {
+fn get_trap_cause() -> usize {
     let mut cause: usize;
     unsafe {
         asm!(
@@ -68,8 +70,8 @@ fn get_interrupt_cause() -> usize {
     cause
 }
 
-/// Extract the interrupt bit and the cause from the scause register.
-/// Returns `(is_interrupt: bool, cause: usize)`
+/// Extract the trap bit and the cause from the scause register.
+/// Returns `(is_async: bool, cause: usize)`
 #[inline(always)]
 pub fn extract_scause(scause: usize) -> (bool, usize) {
     let interrupt = (scause >> (core::mem::size_of::<usize>() * 8 - 1)) != 0;
@@ -93,39 +95,3 @@ fn write_sepc(sepc: usize) {
     }
 }
 
-#[no_mangle]
-pub extern "riscv-interrupt-s" fn s_mode_interrupt_handler() {
-    let (is_interrupt, cause) = extract_scause(get_interrupt_cause());
-
-    if is_interrupt {
-        println!("+ S-Mode Interrupt");
-    } else {
-        println!("+ S-Mode Exception");
-    }
-
-    println!("| Cause: {:#x}", cause);
-
-    match (is_interrupt, cause) {
-        (false, 0x2) => {
-            println!("| Illegal instruction");
-            panic!("Illegal instruction");
-        }
-        (false, 0x5) => {
-            println!("| Load access fault");
-            panic!("Load access fault");
-        }
-        (true, 0x5) => {
-            println!("| Supervisor timer interrupt");
-            clear_timer_interrupt();
-            set_timer(get_time() + 10000000);
-        }
-        (false, 0x7) => {
-            println!("| Store/AMO access fault");
-            panic!("Store/AMO access fault");
-        }
-        _ => {
-            println!("| Unhandled interrupt/exception");
-            panic!("Unhandled interrupt/exception");
-        }
-    };
-}
