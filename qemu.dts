@@ -1,0 +1,101 @@
+
+/dts-v1/;
+
+/ {
+    #address-cells = <2>; /* Defines the number of cells for addressing in this device tree */
+    #size-cells = <2>; /* Defines the number of cells for size in this device tree */
+    compatible = "riscv-virtio"; /* Indicates compatibility with the QEMU RISC-V virtio platform */
+    model = "riscv-virtio,qemu"; /* Model name for this platform */
+
+    memory@80000000 {
+        device_type = "memory"; /* Defines this node as system memory */
+        reg = <0x0 0x80000000 0x0 0x10000000>; /* Memory region: 
+            - First two cells <0x0 0x80000000>: Start address (0x80000000)
+            - Next two cells <0x0 0x10000000>: Size (0x10000000 = 256MB) */
+    };
+
+    cpus {
+        #address-cells = <1>; /* Defines addressing for CPUs */
+        #size-cells = <0>; /* No size cells needed for CPUs */
+        timebase-frequency = <1000000>; /* Timer frequency in Hz */
+
+        cpu0: cpu@0 {
+            device_type = "cpu"; /* Marks this node as a CPU */
+            reg = <0>; /* CPU ID */
+            compatible = "riscv"; /* RISC-V CPU compatibility */
+            riscv,isa = "rv64imac"; /* Instruction set architecture (64-bit, IMAC extensions) */
+            mmu-type = "riscv,sv48"; /* Memory management unit type: sv48 */
+            status = "okay"; /* Indicates this CPU is enabled */
+        };
+
+        cpu1: cpu@1 {
+            device_type = "cpu";
+            reg = <1>; /* CPU ID */
+            compatible = "riscv";
+            riscv,isa = "rv64imac";
+            mmu-type = "riscv,sv48";
+            status = "okay";
+        };
+
+        cpu2: cpu@2 {
+            device_type = "cpu";
+            reg = <2>; /* CPU ID */
+            compatible = "riscv";
+            riscv,isa = "rv64imac";
+            mmu-type = "riscv,sv48";
+            status = "okay";
+        };
+
+        cpu3: cpu@3 {
+            device_type = "cpu";
+            reg = <3>; /* CPU ID */
+            compatible = "riscv";
+            riscv,isa = "rv64imac";
+            mmu-type = "riscv,sv48";
+            status = "okay";
+        };
+    };
+
+    chosen {
+        stdout-path = "/soc/serial@10000000"; /* Default output device (UART) */
+		opensbi-config {
+            compatible = "opensbi,config"; /* Marks this node as OpenSBI configuration */
+            cold-boot-harts = <&cpu0 &cpu1 &cpu2 &cpu3>; /* Specifies the CPUs (harts) to initialize at cold boot */
+            heap-size = <0x400000>; /* OpenSBI heap size (4 MB) for dynamic memory allocations */
+		};
+    };
+
+    soc {
+        #address-cells = <2>; /* Addressing for peripherals */
+        #size-cells = <2>; /* Size for peripherals */
+        compatible = "simple-bus"; /* Simple bus for peripherals */
+        ranges; /* No address translation */
+
+        serial@10000000 {
+            compatible = "ns16550a"; /* UART device type (serial communication) */
+            reg = <0x0 0x10000000 0x0 0x100>; /* UART register region: 
+                - First two cells <0x0 0x10000000>: Start address (0x10000000)
+                - Next two cells <0x0 0x100>: Size (0x100 bytes) */
+            clock-frequency = <1843200>; /* UART clock frequency in Hz */
+            interrupt-parent = <&plic>; /* Points to the PLIC (interrupt controller) */
+            interrupts = <10>; /* Interrupt ID for UART */
+        };
+
+        plic: plic@c000000 {
+            compatible = "riscv,plic0"; /* Platform-Level Interrupt Controller (PLIC): Handles external interrupts */
+            reg = <0x0 0xc000000 0x0 0x1000>; /* PLIC register region:
+                - First two cells <0x0 0xc000000>: Start address (0xc000000)
+                - Next two cells <0x0 0x1000>: Size (0x1000 bytes) */
+            interrupt-controller; /* Marks this as an interrupt controller */
+            #interrupt-cells = <1>; /* Number of cells for interrupt specifiers */
+        };
+
+        clint@2000000 {
+            compatible = "riscv,clint0"; /* Core Local Interruptor (CLINT): Handles timer and software interrupts */
+            reg = <0x0 0x2000000 0x0 0x10000>; /* CLINT register region:
+                - First two cells <0x0 0x2000000>: Start address (0x2000000)
+                - Next two cells <0x0 0x10000>: Size (0x10000 bytes) */
+            interrupt-parent = <&plic>; /* Points to the PLIC (interrupt controller) */
+        };
+    };
+};
