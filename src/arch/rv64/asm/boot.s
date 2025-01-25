@@ -93,7 +93,7 @@ _abs_start:
     sd a2, 16(sp)
     # Followed by unused stack space for 16-byte alignment
 
-    call _mp_hook
+    call main_mp
     mv t0, a0
     beqz a0, ram_initialized
 
@@ -126,8 +126,8 @@ ram_initialized: # RAM initialized
     
 /* Default Multiprocessor Hook. Returns 1 if the hartid is
    0 otherwise busy-loops all other harts. */
-.weak _mp_hook
-_mp_hook:
+.weak main_mp
+main_mp:
     beqz a0, 2f # If hartid is 0 return 1 or "true"
 1: wfi # Park hart in a loop
     j 1b

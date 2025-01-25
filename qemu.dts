@@ -60,7 +60,7 @@
         stdout-path = "/soc/serial@10000000"; /* Default output device (UART) */
 		opensbi-config {
             compatible = "opensbi,config"; /* Marks this node as OpenSBI configuration */
-            cold-boot-harts = <&cpu0 &cpu1 &cpu2 &cpu3>; /* Specifies the CPUs (harts) to initialize at cold boot */
+            cold-boot-harts = <&cpu0 /* &cpu1 &cpu2 &cpu3 */>; /* Specifies the CPUs (harts) to initialize at cold boot */
             heap-size = <0x400000>; /* OpenSBI heap size (4 MB) for dynamic memory allocations */
 		};
     };

@@ -3,7 +3,7 @@ OUTPUT_ARCH("riscv")
 ENTRY(main)
 
 MEMORY {
-  RAM (wxa) : ORIGIN = 0x80200000, LENGTH = 256M
+  RAM (wxa) : ORIGIN = 0x80200000, LENGTH = 128M
 }
 
 REGION_ALIAS("REGION_TEXT", RAM);
@@ -69,7 +69,7 @@ SECTIONS {
     . = ALIGN(8);
     PROVIDE(_sbss = .);
 
-    *(.bss .bss.*);
+    *(.sbss .sbss.* .bss .bss.*);
     
     . = ALIGN(8);
     PROVIDE(_ebss = .);

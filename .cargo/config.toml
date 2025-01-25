@@ -7,10 +7,10 @@ qemu-system-riscv64
   -cpu rv64
   -smp 4
   -machine virt
-  -m 256M
+  -m 1G
   -s
   -nographic
-  -bios opensbi/build/platform/generic/firmware/fw_dynamic.bin
+  -bios ./opensbi/build/platform/generic/firmware/fw_dynamic.bin
   -kernel
 """
 
@@ -20,9 +20,9 @@ qemu-system-riscv32
   -cpu rv32
   -smp 4
   -machine virt
-  -m 256M
+  -m 1G
   -s
   -nographic
-  -bios opensbi/build/platform/generic/firmware/fw_dynamic.bin
+  -bios ./opensbi/build/platform/generic/firmware/fw_dynamic.bin
   -kernel
 """

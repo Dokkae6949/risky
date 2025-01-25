@@ -36,6 +36,7 @@
             
             pkgsCross.riscv32.stdenv.cc
             pkgsCross.riscv64.stdenv.cc
+            qemu
             dtc
           ];
         };
